@@ -1,0 +1,65 @@
+publishing {
+	publications {
+		mavenPrimary(MavenPublication) {
+			from components.java
+
+			groupId = project.group
+			artifactId = project.archivesBaseName
+			version = project.version
+
+			artifact sourcesJar
+			artifact javadocJar
+
+			pom {
+				name = pomName
+				description = project.description
+				url = "https://github.com/" + gitLink
+
+				developers {
+					developer {
+						id = "misterpemodder"
+						name = "Yanis Guaye"
+						email = "yguaye44@gmail.com"
+					}
+				}
+
+				licenses {
+					license {
+						name = "MIT License"
+						url = "https://opensource.org/licenses/MIT"
+						distribution = "repo"
+					}
+				}
+
+				scm {
+					url = "https://github.com/" + gitLink
+					connection = "scm:git:git@github.com:" + gitLink + ".git"
+					developerConnection = "scm:git:git@github.com:" + gitLink + ".git"
+				}
+			}
+		}
+	}
+
+	repositories {
+		if (project.hasProperty("mavenUser") && project.hasProperty("mavenPass")) {
+			maven {
+				url isSnapshot == 'true' ? mavenSnapshotRepo : mavenReleaseRepo
+				credentials {
+					username = project.properties.mavenUser
+					password = project.properties.mavenPass
+				}
+			}
+		} else {
+			println("properties mavenUser and/or mavenPass are not defined!")
+		}
+	}
+}
+
+signing {
+	if (project.hasProperty("signing.keyId")) {
+		sign configurations.archives;
+		sign publishing.publications.mavenPrimary
+	} else {
+		println("$name: skipping jar signing");
+	}
+}
