@@ -43,7 +43,13 @@ publishing {
 	repositories {
 		if (project.hasProperty("mavenUser") && project.hasProperty("mavenPass")) {
 			maven {
-				url isSnapshot == 'true' ? mavenSnapshotRepo : mavenReleaseRepo
+				def repo = isSnapshot == 'true' ? 'mavenSnapshotRepo' : 'mavenReleaseRepo'
+				if (!project.hasProperty(repo)) {
+					println("property " + repo + " is not defined!");
+					url ""
+				} else {
+					url project.getProperty(repo)
+				}
 				credentials {
 					username = project.properties.mavenUser
 					password = project.properties.mavenPass
