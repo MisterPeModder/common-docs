@@ -1,14 +1,22 @@
 publishing {
 	publications {
-		mavenPrimary(MavenPublication) {
-			from components.java
+		mavenJava(MavenPublication) {
 
 			groupId = project.group
 			artifactId = project.archivesBaseName
 			version = project.version
 
-			artifact sourcesJar
-			artifact javadocJar
+			artifact(jar) {
+				builtBy remapJar
+			}
+
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+
+			artifact(javadocJar) {
+    		builtBy javadocJar
+  		}
 
 			pom {
 				name = pomName
@@ -63,8 +71,7 @@ publishing {
 
 signing {
 	if (project.hasProperty("signing.keyId")) {
-		sign configurations.archives;
-		sign publishing.publications.mavenPrimary
+		sign publishing.publications.mavenJava;
 	} else {
 		println("$name: skipping jar signing");
 	}
